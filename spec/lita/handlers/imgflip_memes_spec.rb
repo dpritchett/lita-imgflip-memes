@@ -12,7 +12,7 @@ describe Lita::Handlers::ImgflipMemes, lita_handler: true do
   describe ':make_meme' do
     it 'responds with an image URL' do
       send_message "Lita aliens chat bots"
-      expect(replies.last).to match(/http/i)
+      expect(replies.last).to match(/http.*jpg/i)
     end
   end
 end
