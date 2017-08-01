@@ -1,7 +1,7 @@
 # lita-imgflip-memes
 
-[![Build Status](https://travis-ci.org/dpritchett/lita-imgflip-memes.png?branch=master)](https://travis-ci.org/dpritchett/lita-imgflip-memes)
-[![Coverage Status](https://coveralls.io/repos/dpritchett/lita-imgflip-memes/badge.png)](https://coveralls.io/r/dpritchett/lita-imgflip-memes)
+[![Build Status](https://travis-ci.org/dpritchett/lita-imgflip-memes.svg?branch=master)](https://travis-ci.org/dpritchett/lita-imgflip-memes)
+[![Coverage Status](https://coveralls.io/repos/dpritchett/lita-imgflip-memes/badge.svg)](https://coveralls.io/r/dpritchett/lita-imgflip-memes)
 
 TODO: Add a description of the plugin.
 
