@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "lita-imgflip-memes"
-  spec.version       = "1.0.0"
+  spec.version       = "1.0.1"
   spec.authors       = ["Daniel J. Pritchett"]
   spec.email         = ["dpritchett@gmail.com"]
   spec.description   = "Turns chatbot input text into meme images"

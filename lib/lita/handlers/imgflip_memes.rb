@@ -1,11 +1,15 @@
 require 'pry'
+
 module Lita
   module Handlers
-    class ImgflipApiError < Error; end
-
     class ImgflipMemes < Handler
+      class ImgflipApiError < StandardError; end
+      class ConnectionError < StandardError; end
+
       config :api_user, default: ENV['IMGFLIP_API_USER']
       config :api_password, default: ENV['IMGFLIP_API_PASSWORD']
+
+      API_URL = 'https://api.imgflip.com/caption_image'
 
       TEMPLATES = [
         { template_id: 101470, pattern: /^aliens()\s+(.+)/i, help: 'Ancient aliens guy' },
@@ -20,7 +24,13 @@ module Lita
         line1, line2 = extract_meme_text(message.match_data)
 
         template = find_template(message.pattern)
-        image = pull_image(template.fetch(:template_id), line1, line2)
+
+        begin
+          image = pull_image(template.fetch(:template_id), line1, line2)
+        rescue ConnectionError, ImgflipApiError => err
+          Lita.logger.error(err.message)
+          return message.reply 'Bummer - can\'t connect to Imgflip.'
+        end
 
         message.reply image
       end
@@ -40,19 +50,22 @@ module Lita
         username = config.api_user
         password = config.api_password
 
-        api_url = 'https://api.imgflip.com/caption_image'
-        result = http.post api_url, { 
-          template_id: template_id,
-          username: username,
-          password: password,
-          text0: line1,
-          text1: line2
-        } 
+        begin
+          result = http.post API_URL, { 
+            template_id: template_id,
+            username: username,
+            password: password,
+            text0: line1,
+            text1: line2
+          } 
+        rescue Faraday::Error => err
+          raise ConnectionError, err.message
+        end
 
         # clean me up
         parsed = JSON.parse(result.body)
         raise(ImgflipApiError, parsed['error_message']) if parsed.keys.include?('error_message')
-        image = parsed.fetch('data').fetch('url')
+        image = parsed.fetch('data', {}).fetch('url')
       end
 
       Lita.register_handler(self)
