@@ -1,11 +1,11 @@
 require 'pry'
 module Lita
   module Handlers
+    class ImgflipApiError < Error; end
+
     class ImgflipMemes < Handler
-      # insert handler code here
-
-      Lita.register_handler(self)
-
+      config :api_user, default: ENV['IMGFLIP_API_USER']
+      config :api_password, default: ENV['IMGFLIP_API_PASSWORD']
 
       TEMPLATES = [
         { template_id: 101470, pattern: /^aliens()\s+(.+)/i, help: 'Ancient aliens guy' },
@@ -37,8 +37,8 @@ module Lita
       end
 
       def pull_image(template_id, line1, line2)
-        username = ENV.fetch('IMGFLIP_USERNAME', 'memtech_elvis')
-        password = ENV.fetch('IMGFLIP_USERNAME', 'memtech_elvis')
+        username = config.api_user
+        password = config.api_password
 
         api_url = 'https://api.imgflip.com/caption_image'
         result = http.post api_url, { 
@@ -50,8 +50,12 @@ module Lita
         } 
 
         # clean me up
-        image = JSON.parse(result.body).fetch("data").fetch("url")
+        parsed = JSON.parse(result.body)
+        raise(ImgflipApiError, parsed['error_message']) if parsed.keys.include?('error_message')
+        image = parsed.fetch('data').fetch('url')
       end
+
+      Lita.register_handler(self)
     end
   end
 end
