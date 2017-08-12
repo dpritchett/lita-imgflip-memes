@@ -8,28 +8,25 @@ module Lita
 
 
       TEMPLATES = [
-        { template_id: 101470, pattern: /^(aliens)\s+(.+)/i, help: 'Ancient aliens guy' },
+        { template_id: 101470, pattern: /^aliens()\s+(.+)/i, help: 'Ancient aliens guy' },
         { template_id: 61579, pattern: /(one does not simply) (.*)/i, help: 'one does not simply walk into mordor' },
       ]
-
 
       TEMPLATES.each do |t|
         route t.fetch(:pattern), :make_meme, command: true, help: t.fetch(:help)
       end
-#      route /^(aliens)\s+(.+)/i, :make_meme, command: true, help: 'Aliens guy meme'
 
       def make_meme(message)
+        match = message.matches.first
+        raise ArgumentError unless match.size == 2
+        line1, line2 = match
+
         template = TEMPLATES.select { |t| t.fetch(:pattern) == message.pattern }.first
+        raise ArgumentError if template.nil?
 
-        raiseArgumentError if template.nil?
+        image = pull_image(template.fetch(:template_id), line1, line2)
 
-	# generalize me
-	# figure out when i might have multiple matches instead of just :first
-	meme_name, text0, text1 = message.matches.first
-
-        image = pull_image(template.fetch(:template_id), text0, text1)
-
-	message.reply image
+        message.reply image
       end
 
       def pull_image(template_id, line1, line2)
@@ -45,8 +42,8 @@ module Lita
           text1: line2
         } 
 
-	# clean me up
-	image = JSON.parse(result.body).fetch("data").fetch("url")
+        # clean me up
+        image = JSON.parse(result.body).fetch("data").fetch("url")
       end
     end
   end

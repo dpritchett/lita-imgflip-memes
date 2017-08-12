@@ -26,14 +26,10 @@ describe Lita::Handlers::ImgflipMemes, lita_handler: true do
       expect(replies.last).to match(jpeg_url_match)
     end
 
-    it 'allows for second-line-only inputs' do
-      #expect(subject).to receive(:make_meme)
-      #expect(robot).to receive(:make_meme)
 
-#      expect(subject).to receive(:make_meme)
-#      expect(robot).to receive(:pull_image)
-
-#      expect(subject).to receive(:pull_image).with(aliens_template_id, '', 'chat bots')
+    it 'can handle two-line inputs' do
+      send_message 'lita one does not simply walk into mordor'
+      expect(replies.last).to match(jpeg_url_match)
     end
   end
 end
