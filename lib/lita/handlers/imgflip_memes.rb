@@ -17,16 +17,23 @@ module Lita
       end
 
       def make_meme(message)
-        match = message.matches.first
-        raise ArgumentError unless match.size == 2
-        line1, line2 = match
+        line1, line2 = extract_meme_text(message.match_data)
 
-        template = TEMPLATES.select { |t| t.fetch(:pattern) == message.pattern }.first
-        raise ArgumentError if template.nil?
-
+        template = find_template(message.pattern)
         image = pull_image(template.fetch(:template_id), line1, line2)
 
         message.reply image
+      end
+
+      def extract_meme_text(match_data)
+        _, line1, line2 = match_data.to_a
+        return line1, line2
+      end
+
+      def find_template(pattern)
+        template = TEMPLATES.select { |t| t.fetch(:pattern) == pattern }.first
+        raise ArgumentError if template.nil?
+        return template
       end
 
       def pull_image(template_id, line1, line2)
