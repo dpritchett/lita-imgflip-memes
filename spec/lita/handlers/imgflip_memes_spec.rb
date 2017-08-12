@@ -2,6 +2,7 @@ require "spec_helper"
 
 describe Lita::Handlers::ImgflipMemes, lita_handler: true do
   let(:robot) { Lita::Robot.new(registry) }
+  let(:jpeg_url_match) { /http.*\.jpg/i }
 
   subject { described_class.new(robot) }
 
@@ -9,10 +10,19 @@ describe Lita::Handlers::ImgflipMemes, lita_handler: true do
     it { is_expected.to route("Lita aliens chat bots") }
   end
 
+  describe ':pull_image' do
+    it 'returns a jpeg url' do
+      aliens_template_id = 101470
+      result = subject.pull_image(aliens_template_id, 'hello', 'world')
+
+      expect(result).to match(jpeg_url_match)
+    end
+  end
+
   describe ':make_meme' do
     it 'responds with an image URL' do
       send_message "Lita aliens chat bots"
-      expect(replies.last).to match(/http.*jpg/i)
+      expect(replies.last).to match(jpeg_url_match)
     end
   end
 end
