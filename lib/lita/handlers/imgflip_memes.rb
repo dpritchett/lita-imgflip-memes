@@ -11,14 +11,7 @@ module Lita
 
       API_URL = 'https://api.imgflip.com/caption_image'
 
-      TEMPLATES = [
-        { template_id: 101470, pattern: /^aliens()\s+(.+)/i, help: 'Ancient aliens guy' },
-        { template_id: 61579, pattern: /(one does not simply) (.*)/i, help: 'one does not simply walk into mordor' },
-      ]
-
-      TEMPLATES.each do |t|
-        route t.fetch(:pattern), :make_meme, command: true, help: t.fetch(:help)
-      end
+      @@_templates = []
 
       def make_meme(message)
         line1, line2 = extract_meme_text(message.match_data)
@@ -41,7 +34,7 @@ module Lita
       end
 
       def find_template(pattern)
-        template = TEMPLATES.select { |t| t.fetch(:pattern) == pattern }.first
+        template = registered_templates.select { |t| t.fetch(:pattern) == pattern }.first
         raise ArgumentError if template.nil?
         return template
       end
@@ -67,6 +60,23 @@ module Lita
         raise(ImgflipApiError, parsed['error_message']) if parsed.keys.include?('error_message')
         image = parsed.fetch('data', {}).fetch('url')
       end
+
+      def self.add_meme(template_id:, pattern:, help:)
+        @@_templates << { template_id: template_id, pattern: pattern, help: help }
+
+        route pattern, :make_meme, help: help
+      end
+
+      def registered_templates
+        self.class.registered_templates
+      end
+
+      def self.registered_templates
+        @@_templates
+      end
+
+      add_meme(template_id: 101470, pattern: /^aliens()\s+(.+)/i, help: 'Ancient aliens guy')
+      add_meme(template_id: 61579, pattern: /(one does not simply) (.*)/i, help: 'one does not simply walk into mordor')
 
       Lita.register_handler(self)
     end

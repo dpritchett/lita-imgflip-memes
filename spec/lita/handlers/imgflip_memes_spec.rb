@@ -33,7 +33,7 @@ describe Lita::Handlers::ImgflipMemes, lita_handler: true do
   end
 
   describe ':extract_meme_text' do
-    let(:matchers) { described_class::TEMPLATES }
+    let(:matchers) { described_class.registered_templates }
 
     it 'can properly match no-first-line inputs' do
       matcher = matchers.select { |t| t.fetch(:template_id) == 101470 }.first

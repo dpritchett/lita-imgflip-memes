@@ -30,6 +30,18 @@ I have set up this gem to deafult to the following environment variables if the 
   ENV['IMGFLIP_API_PASSWORD']
 ```
 
+### Adding new memes to your local Lita bot
+On a suggestion from [@joshwlewis](https://github.com/joshwlewis) I've added a way to put new memes in your Lita bot without having to monkey patch this gem.  Add them to your `lita_config.rb` with the `add_meme` method:
+
+```rb
+Lita::Handlers::ImgflipMemes.add_meme(
+  template_id: 61546,
+  pattern: /(brace yoursel[^\s]+) (.*)/i,
+  help: 'brace yourselves, <text>')
+```
+
+Note that the `pattern` needs to be a regex and it needs to capture two strings.  If you don't have two pairs of parens in your regex you're gonna have a bad time.
+
 ## Usage
 
 ```
