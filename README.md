@@ -1,5 +1,6 @@
 # lita-imgflip-memes
 
+[![Gem](https://img.shields.io/gem/dt/lita-imgflip-memes.svg)](https://rubygems.org/gems/lita-imgflip-memes)
 [![Build Status](https://travis-ci.org/dpritchett/lita-imgflip-memes.svg?branch=master)](https://travis-ci.org/dpritchett/lita-imgflip-memes)
 [![Coverage Status](https://coveralls.io/repos/dpritchett/lita-imgflip-memes/badge.svg)](https://coveralls.io/r/dpritchett/lita-imgflip-memes)
 
