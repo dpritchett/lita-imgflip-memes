@@ -22,7 +22,7 @@ describe Lita::Handlers::ImgflipMemes, lita_handler: true do
   describe ':make_meme' do
     after { send_command "aliens chat bots" }
     it 'responds with an image URL' do
-      send_message "Lita aliens chat bots"
+      send_message 'Lita aliens chat bots'
       expect(replies.last).to match(jpeg_url_match)
     end
 
@@ -32,6 +32,7 @@ describe Lita::Handlers::ImgflipMemes, lita_handler: true do
     end
   end
 
+  # START:cleaned_up
   describe ':extract_meme_text' do
     let(:matchers) { described_class.registered_templates }
 
@@ -55,4 +56,5 @@ describe Lita::Handlers::ImgflipMemes, lita_handler: true do
       expect(result).to eql(['one does not simply', 'walk into mordor'])
     end
   end
+  # END:cleaned_up
 end

@@ -1,3 +1,4 @@
+# START:setup
 require 'pry'
 
 module Lita
@@ -12,7 +13,9 @@ module Lita
       API_URL = 'https://api.imgflip.com/caption_image'
 
       @@_templates = []
+      # END:setup
 
+      # START:make_meme
       def make_meme(message)
         line1, line2 = extract_meme_text(message.match_data)
 
@@ -27,13 +30,20 @@ module Lita
 
         message.reply image
       end
+      # END:make_meme
 
+      # START:etl
       def extract_meme_text(match_data)
         _, line1, line2 = match_data.to_a
         return line1, line2
       end
 
       def find_template(pattern)
+        templates = registered_templates.select do |t|
+          t.fetch(:pattern) == pattern
+        end
+        template = templates.first
+
         template = registered_templates.select { |t| t.fetch(:pattern) == pattern }.first
         raise ArgumentError if template.nil?
         return template
@@ -57,6 +67,19 @@ module Lita
 
         # clean me up
         parsed = JSON.parse(result.body)
+
+        if parsed.keys.include?('error_message')
+          raise(ImgflipApiError, parsed['error_message'])
+        end
+
+        parsed.fetch('data', {}).fetch('url')
+      end
+      # END:etl
+
+      # START:rest
+      def self.add_meme(template_id:, pattern:, help:)
+        @@_templates << { template_id: template_id, pattern: pattern,
+                          help: help }
         raise(ImgflipApiError, parsed['error_message']) if parsed.keys.include?('error_message')
         image = parsed.fetch('data', {}).fetch('url')
       end
@@ -75,10 +98,13 @@ module Lita
         @@_templates
       end
 
-      add_meme(template_id: 101470, pattern: /^aliens()\s+(.+)/i, help: 'Ancient aliens guy')
-      add_meme(template_id: 61579, pattern: /(one does not simply) (.*)/i, help: 'one does not simply walk into mordor')
+      add_meme(template_id: 101470, pattern: /^aliens()\s+(.+)/i,
+               help: { 'aliens invisible sandwich' => 'Ancient Aliens Guy meme' })
+      add_meme(template_id: 61579, pattern: /(one does not simply) (.*)/i,
+               help: { 'one does not simply walk into mordor' => 'Boromir meme'})
 
       Lita.register_handler(self)
     end
   end
 end
+# END:rest
